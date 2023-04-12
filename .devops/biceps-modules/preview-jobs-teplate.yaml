@@ -1,0 +1,60 @@
+parameters:
+-   name: azureSubscription
+    type: string
+    default: ''
+
+-   name: artifactName
+    type: string
+    default: ''
+
+-   name: bicepFile
+    type: string
+    default: ''
+
+-   name: resourceGroup
+    type: string
+    default: ''
+
+-   name: deploymentParameters
+    type: string
+    default: ''
+
+-   name: timeout
+    type: number
+    default: 1440
+
+-   name: notifyUsers
+    type: string
+
+jobs:
+- job: Deploy
+  displayName: Deploy
+  pool:
+    vmImage: ubuntu-latest
+  steps:
+  - download: current
+  - task: AzureCLI@2
+    displayName: az deployment group what-if
+    inputs:
+      azureSubscription: ${{ parameters.azureSubscription }}
+      addSpnToEnvironment: true
+      scriptType: bash
+      scriptLocation: inlineScript
+      inlineScript: |
+        az deployment group what-if \
+          --template-file $(Pipeline.Workspace)/${{ parameters.artifactName }}/${{ parameters.bicepFile }} \
+          --resource-group ${{ parameters.resourceGroup }} \
+          --parameters ${{ parameters.deploymentParameters }}
+
+- job: WaitForApproval
+  displayName: Wait for Approval
+  dependsOn: Deploy
+  pool:
+    name: server
+  steps:
+  - task: ManualValidation@0
+    timeoutInMinutes: ${{ parameters.timeout }} # task will timeout in 1 day
+    inputs:
+      notifyUsers: ${{ parameters.notifyUsers  }}
+      instructions: 'Please review and approve the deployment plan'
+      onTimeout: 'reject'
