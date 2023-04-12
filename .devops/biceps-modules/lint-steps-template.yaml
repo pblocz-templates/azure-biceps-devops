@@ -1,0 +1,17 @@
+parameters:
+-   name: bicepFile
+    type: string
+    default: ''
+
+-   name: artifactName
+    type: string
+    default: ''
+
+steps:
+-   download: current
+
+-   script: |
+        az bicep build --file ${{ parameters.bicepFile }}
+    workingDirectory: $(Pipeline.Workspace)/${{ parameters.artifactName }}
+    displayName: az bicep build
+    failOnStderr: true

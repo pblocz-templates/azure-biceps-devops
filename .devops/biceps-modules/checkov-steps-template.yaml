@@ -1,0 +1,25 @@
+# checkov-steps-template.yml
+parameters:
+-   name: bicepFile
+    type: string
+    default: ''
+
+-   name: artifactName
+    type: string
+    default: ''
+
+steps:
+-   task: UsePythonVersion@0
+    inputs:
+        versionSpec: 3.9
+        addToPath: true
+
+-   script: |
+        python -m pip install --upgrade pip
+        pip install checkov
+    displayName: Install Checkov
+
+-   script: |
+        checkov -f ${{ parameters.bicepFile }}
+    workingDirectory: $(Pipeline.Workspace)/${{ parameters.artifactName }}
+    displayName: Run Checkov

@@ -1,0 +1,16 @@
+parameters:
+-   name: workingDirectory
+    type: string
+    default: ''
+
+-   name: artifactName
+    type: string
+    default: ''
+
+steps:
+-   checkout: self
+    clean: true
+    submodules: true
+
+-   publish: ${{ parameters.workingDirectory }}
+    artifact: ${{ parameters.artifactName }}

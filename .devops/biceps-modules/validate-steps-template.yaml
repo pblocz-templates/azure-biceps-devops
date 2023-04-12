@@ -1,0 +1,37 @@
+# validate-steps-template.yml
+parameters:
+-   name: azureSubscription
+    type: string
+    default: ''
+
+-   name: artifactName
+    type: string
+    default: ''
+
+-   name: bicepFile
+    type: string
+    default: ''
+
+-   name: resourceGroup
+    type: string
+    default: ''
+
+-   name: deploymentParameters
+    type: string
+    default: ''
+
+steps:
+-   download: current
+
+-   task: AzureCLI@2
+    displayName: az deployment group validate
+    inputs:
+        azureSubscription: ${{ parameters.azureSubscription }}
+        addSpnToEnvironment: true
+        scriptType: bash
+        scriptLocation: inlineScript
+        inlineScript: |
+            az deployment group validate \
+              --template-file $(Pipeline.Workspace)/${{ parameters.artifactName }}/${{ parameters.bicepFile }} \
+              --resource-group ${{ parameters.resourceGroup }} \
+              --parameters ${{ parameters.deploymentParameters }}
