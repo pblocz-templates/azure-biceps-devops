@@ -1,0 +1,12 @@
+variables:
+    - name: azureSubscription
+      value: dev-service-connection
+    - name: resourceGroup
+      value: deployent-rsg
+    - name: deploymentParameters
+      value: >-
+        identityClientId=$servicePrincipalId
+        identityClientSecret=$servicePrincipalKey
+        someOther=value
+    - name: environment
+      value: dev

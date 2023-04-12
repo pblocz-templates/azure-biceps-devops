@@ -1,0 +1,34 @@
+# psrule-steps-template.yml
+parameters:
+-   name: bicepFile
+    type: string
+    default: ''
+
+-   name: artifactName
+    type: string
+    default: ''
+
+steps:
+-   task: PowerShell@2
+    displayName: Install PSRule for Azure
+    inputs:
+        targetType: inline
+        script: |
+            Install-Module -Name PSRule.Rules.Azure -Force
+            Install-Module -Name PSRule -Force
+            Install-Module Az.Resources -Force
+
+
+
+-   task: PowerShell@2
+    displayName: Run PSRule for Azure
+    inputs:
+        targetType: inline
+        script: |
+            Invoke-PSRule -Module PSRule.Rules.Azure -InputPath ./*.bicep -Path ps-rule.yaml
+            # Get-ChildItem -Path . -Filter *.bicep | ForEach-Object {
+            #   $path = $_.FullName
+            #   Write-Host "Validating $path"
+            #   Invoke-PSRule -InputPath $path -Module PSRule.Rules.Azure
+            # }
+        workingDirectory: $(Pipeline.Workspace)/${{ parameters.artifactName }}

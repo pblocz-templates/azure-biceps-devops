@@ -1,0 +1,45 @@
+# deploy-jobs-template.yml
+parameters:
+-   name: environment
+    type: string
+    default: ''
+
+-   name: azureSubscription
+    type: string
+    default: ''
+
+-   name: artifactName
+    type: string
+    default: ''
+
+-   name: bicepFile
+    type: string
+    default: ''
+
+-   name: resourceGroup
+    type: string
+    default: ''
+
+-   name: deploymentParameters
+    type: string
+    default: ''
+
+jobs:
+-   deployment: Deploy
+    environment: ${{ parameters.environment }}
+    strategy:
+        runOnce:
+            deploy:
+                steps:
+                -   task: AzureCLI@2
+                    displayName: Deploy bicep template
+                    inputs:
+                        azureSubscription: ${{ parameters.azureSubscription }}
+                        addSpnToEnvironment: true
+                        scriptType: bash
+                        scriptLocation: inlineScript
+                        inlineScript: |
+                            az deployment group create \
+                              --template-file $(Pipeline.Workspace)/${{ parameters.artifactName }}/${{ parameters.bicepFile }} \
+                              --resource-group ${{ parameters.resourceGroup }} \
+                              --parameters ${{ parameters.deploymentParameters }}

@@ -1,0 +1,69 @@
+# azure-pipelines.yaml
+variables:
+    workingDirectory: biceps
+    artifactName: bicepArchitecture
+    bicepFile: main.bicep
+
+stages:
+-   stage: Build
+    jobs:
+    -   job: publish
+        steps:
+        -   template: ./biceps-modules/build-steps-template.yaml
+            parameters:
+                workingDirectory: $(workingDirectory)
+                artifactName: $(artifactName)
+-   stage: Lint
+    jobs:
+    -   job: Lint
+        steps:
+        -   template: ./biceps-modules/lint-steps-template.yaml
+            parameters:
+                bicepFile: $(bicepFile)
+                artifactName: $(artifactName)
+
+        -   template: ./biceps-modules/checkov-steps-template.yaml
+            parameters:
+                bicepFile: $(bicepFile)
+                artifactName: $(artifactName)
+
+        # -   template: ./biceps-modules/psrule-steps-template.yaml
+        #     parameters:
+        #         bicepFile: $(bicepFile)
+        #         artifactName: $(artifactName)
+-   stage: Validate
+    jobs:
+    -   job: Validate
+        steps:
+        -   template: ./biceps-modules/validate-steps-template.yaml
+            parameters:
+                azureSubscription: $(azureSubscription)
+                artifactName: $(artifactName)
+                bicepFile: $(bicepFile)
+                resourceGroup: $(resourceGroup)
+                deploymentParameters: $(deploymentParameters)
+-   stage: Preview
+    jobs:
+    -   job: Preview
+        steps:
+        -   template: ./biceps-modules/preview-steps-template.yaml
+            parameters:
+                azureSubscription: $(azureSubscription)
+                artifactName: $(artifactName)
+                bicepFile: $(bicepFile)
+                resourceGroup: $(resourceGroup)
+                deploymentParameters: $(deploymentParameters)
+-   stage: Deploy Dev
+    # condition: succeeded()
+    condition: and(succeeded(), ne(variables['Build.Reason'], 'PullRequest'), or(startsWith(variables['Build.SourceBranch'], 'refs/heads/main'), eq(variables['Build.Reason'], 'Manual')))
+    variables:
+    -   template: variables/dev-env.yaml
+    jobs:
+    -   template: ./biceps-modules/deploy-jobs-template.yaml
+        parameters:
+            environment: $(environment)
+            azureSubscription: $(azureSubscription)
+            artifactName: $(artifactName)
+            bicepFile: $(bicepFile)
+            resourceGroup: $(resourceGroup)
+            deploymentParameters: $(deploymentParameters)
