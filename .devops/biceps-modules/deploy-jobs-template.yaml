@@ -24,9 +24,14 @@ parameters:
     type: string
     default: ''
 
+-   name: dependsOn
+    type: object
+    default: []
+
 jobs:
 -   deployment: Deploy
     environment: ${{ parameters.environment }}
+    dependsOn: ${{ parameters.dependsOn }}
     strategy:
         runOnce:
             deploy:

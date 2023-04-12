@@ -31,19 +31,14 @@ stages:
         #     parameters:
         #         bicepFile: $(bicepFile)
         #         artifactName: $(artifactName)
--   stage: Validate
+-   stage: DeployDev 
+    displayName: Deploy Dev
+    # condition: succeeded()
+    condition: and(succeeded(), ne(variables['Build.Reason'], 'PullRequest'), or(startsWith(variables['Build.SourceBranch'], 'refs/heads/main'), eq(variables['Build.Reason'], 'Manual')))
+    variables:
+    -   template: variables/dev-env.yaml
     jobs:
-    -   job: Validate
-        steps:
-        -   template: ./biceps-modules/validate-steps-template.yaml
-            parameters:
-                azureSubscription: ${{ variables.azureSubscription }}
-                artifactName: $(artifactName)
-                bicepFile: $(bicepFile)
-                resourceGroup: $(resourceGroup)
-                deploymentParameters: $(deploymentParameters)
--   stage: Preview
-    jobs:
+
     -   job: Preview
         steps:
         -   template: ./biceps-modules/preview-steps-template.yaml
@@ -53,13 +48,6 @@ stages:
                 bicepFile: $(bicepFile)
                 resourceGroup: $(resourceGroup)
                 deploymentParameters: $(deploymentParameters)
--   stage: DeployDev 
-    displayName: Deploy Dev
-    # condition: succeeded()
-    condition: and(succeeded(), ne(variables['Build.Reason'], 'PullRequest'), or(startsWith(variables['Build.SourceBranch'], 'refs/heads/main'), eq(variables['Build.Reason'], 'Manual')))
-    variables:
-    -   template: variables/dev-env.yaml
-    jobs:
     -   template: ./biceps-modules/deploy-jobs-template.yaml
         parameters:
             environment: ${{ variables.environment }}
