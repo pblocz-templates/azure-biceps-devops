@@ -63,7 +63,7 @@ stages:
     -   template: ./biceps-modules/deploy-jobs-template.yaml
         parameters:
             environment: ${{ variables.environment }}
-            azureSubscription: $(azureSubscription)
+            azureSubscription: ${{ variables.azureSubscription }}
             artifactName: $(artifactName)
             bicepFile: $(bicepFile)
             resourceGroup: $(resourceGroup)
