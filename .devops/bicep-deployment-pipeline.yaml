@@ -13,6 +13,7 @@ stages:
             parameters:
                 workingDirectory: $(workingDirectory)
                 artifactName: $(artifactName)
+
 -   stage: Lint
     jobs:
     -   job: Lint
@@ -31,6 +32,19 @@ stages:
         #     parameters:
         #         bicepFile: $(bicepFile)
         #         artifactName: $(artifactName)
+
+-   stage: Validate
+    jobs:
+    -   job: Validate
+        steps:
+        -   template: ./biceps-modules/validate-steps-template.yaml
+            parameters:
+                azureSubscription: ${{ variables.azureSubscription }}
+                artifactName: $(artifactName)
+                bicepFile: $(bicepFile)
+                resourceGroup: $(resourceGroup)
+                deploymentParameters: $(deploymentParameters)
+
 -   stage: DeployDev 
     displayName: Deploy Dev
     # condition: succeeded()
@@ -50,6 +64,7 @@ stages:
                 deploymentParameters: $(deploymentParameters)
     -   template: ./biceps-modules/deploy-jobs-template.yaml
         parameters:
+            dependsOn: [Preview]
             environment: ${{ variables.environment }}
             azureSubscription: ${{ variables.azureSubscription }}
             artifactName: $(artifactName)
