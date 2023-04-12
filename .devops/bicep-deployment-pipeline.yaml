@@ -53,7 +53,8 @@ stages:
                 bicepFile: $(bicepFile)
                 resourceGroup: $(resourceGroup)
                 deploymentParameters: $(deploymentParameters)
--   stage: Deploy Dev
+-   stage: DeployDev 
+    displayName: Deploy Dev
     # condition: succeeded()
     condition: and(succeeded(), ne(variables['Build.Reason'], 'PullRequest'), or(startsWith(variables['Build.SourceBranch'], 'refs/heads/main'), eq(variables['Build.Reason'], 'Manual')))
     variables:
