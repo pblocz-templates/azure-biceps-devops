@@ -5,8 +5,8 @@ variables:
       value: deployent-rsg
     - name: deploymentParameters
       value: >-
-        identityClientId=$servicePrincipalId
-        identityClientSecret=$servicePrincipalKey
         someOther=value
+      #  identityClientId=$servicePrincipalId
+      #  identityClientSecret=$servicePrincipalKey
     - name: environment
       value: dev
