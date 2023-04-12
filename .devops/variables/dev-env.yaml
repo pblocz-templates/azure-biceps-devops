@@ -2,7 +2,7 @@ variables:
     - name: azureSubscription
       value: dev-service-connection
     - name: resourceGroup
-      value: deployent-rsg
+      value: deployment-rsg
     - name: deploymentParameters
       value: >-
         someOther=value
