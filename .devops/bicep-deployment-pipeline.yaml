@@ -37,7 +37,7 @@ stages:
         steps:
         -   template: ./biceps-modules/validate-steps-template.yaml
             parameters:
-                azureSubscription: $(azureSubscription)
+                azureSubscription: ${{ variables.azureSubscription }}
                 artifactName: $(artifactName)
                 bicepFile: $(bicepFile)
                 resourceGroup: $(resourceGroup)
@@ -48,7 +48,7 @@ stages:
         steps:
         -   template: ./biceps-modules/preview-steps-template.yaml
             parameters:
-                azureSubscription: $(azureSubscription)
+                azureSubscription: ${{ variables.azureSubscription }}
                 artifactName: $(artifactName)
                 bicepFile: $(bicepFile)
                 resourceGroup: $(resourceGroup)
