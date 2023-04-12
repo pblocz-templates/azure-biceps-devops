@@ -34,6 +34,8 @@ stages:
         #         artifactName: $(artifactName)
 
 -   stage: Validate
+    variables:
+    -   template: variables/dev-env.yaml
     jobs:
     -   job: Validate
         steps:
